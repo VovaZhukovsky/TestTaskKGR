@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="TestTaskKGR.Desktop.UserControls.Views.StreamControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="260" d:DesignWidth="510">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Style/Style.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <GroupBox Header="Управление стримами" HorizontalAlignment="Center" Height="250" VerticalAlignment="Center" Width="500" Margin="10,10,10,10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,10,10,10">
+                <Slider x:Name="ConfidenceTreshold"
+                        Minimum="0.20"
+                        Maximum="0.99"
+                        Foreground="Black"   
+                        Width="120"
+                        VerticalAlignment="Center"
+                        Value="0.8"/>
+                <!--ValueChanged="ConfidenceTreshold_ValueChanged"-->
+
+                <TextBlock VerticalAlignment="Center"
+                           Text="{Binding ElementName=ConfidenceTreshold, Path=Value, StringFormat={}{0:F2}}" />
+            
+                <CheckBox x:Name="EnableTracking"
+                      Content="Track Objects" />
+                      <!--Unchecked="EnableTracking_Unchecked"-->
+
+                <CheckBox x:Name="EnableFiltering"
+                      Content="Enable Filtering ('person' only)" />
+                <!--Unchecked="EnableFiltering_Unchecked"-->
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Grid.Row="1" Margin="10,10,10,10">
+                <!-- Buttons -->
+                <Button x:Name="Start"
+                    Content="Start Detection"/>
+                <!-- Click="StartClick"-->
+
+                <Button x:Name="Stop"
+                    Content="Stop Detection"/>
+                   <!-- Click="StopClick"-->
+            </StackPanel>
+        </Grid>
+    </GroupBox>
+</UserControl>
