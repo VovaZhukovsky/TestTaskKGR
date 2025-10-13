@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace TestTaskKGR.Desktop.UserControls.Views
 {
     /// <summary>
-    /// Interaction logic for StreamControl.xaml
+    /// Interaction logic for Stream1Control.xaml
     /// </summary>
-    public partial class StreamControl : UserControl
+    public partial class Stream2Control : UserControl
     {
-        public StreamControl()
+        public Stream2Control()
         {
             InitializeComponent();
         }

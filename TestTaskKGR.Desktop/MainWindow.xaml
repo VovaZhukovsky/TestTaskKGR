@@ -6,7 +6,7 @@
 		xmlns:local="clr-namespace:TestTaskKGR.Desktop"
         xmlns:views="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
         mc:Ignorable="d"
-        Title="Stream Detection" Height="800" Width="1400">
+        Title="Stream Detection" Height="810" Width="1400">
 	<Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -14,11 +14,13 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="5">
             <views:Stream1 x:Name="Stream1View" DataContext="{Binding Stream1}"/>
+            <views:Stream1Control x:Name="Stream1ViewControl" DataContext="{Binding Stream1Control}"/>
             <views:LogConsole x:Name="LogConsoleControl" DataContext="{Binding LogConsole}"/>
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" Margin="5">
             <views:Stream2 x:Name="Stream2View" DataContext="{Binding Stream2}"/>
-            <views:StreamControl x:Name="StreamControl" DataContext="{Binding StreamControl}"/>
+            <views:Stream2Control x:Name="Stream2ViewControl" DataContext="{Binding Stream2Control}"/>
+            <views:StreamsDetection x:Name="StreamsDetectionControl" DataContext="{Binding StreamsDetection}"/>
         </StackPanel>
     </Grid>
 </Window>

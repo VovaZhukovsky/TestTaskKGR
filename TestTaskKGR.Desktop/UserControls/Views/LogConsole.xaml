@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="260" d:DesignWidth="650">
-    <GroupBox Header="Консоль логов" HorizontalAlignment="Center" Height="250" VerticalAlignment="Center" Width="640" Margin="10,10,10,10">
+             d:DesignHeight="210" d:DesignWidth="650">
+    <GroupBox Header="Консоль логов" HorizontalAlignment="Center" Height="200" VerticalAlignment="Center" Width="640" Margin="10,0,10,0">
         <ScrollViewer>
             <TextBlock Text="{Binding LogMessage}" Margin="5"/>
         </ScrollViewer>

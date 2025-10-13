@@ -16,4 +16,11 @@
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.22.1" />
 		<PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1" />
 	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Compile Update="UserControls\Views\Stream2Control.xaml.cs">
+	    <SubType>Code</SubType>
+	  </Compile>
+	</ItemGroup>
 </Project>
