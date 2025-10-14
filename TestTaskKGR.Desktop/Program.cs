@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TestTaskKGR.Desktop.Implementations;
+using TestTaskKGR.Desktop.Model;
 
 namespace TestTaskKGR.Desktop;
 
@@ -16,7 +17,8 @@ public class Program
                 services.AddSingleton<WpfLogger>();
                 services.AddSingleton<SKPaintSurfaceBehavior>();
                 services.AddSingleton<MainWindow>();
-                services.AddSingleton<RunDetection>();
+                services.AddSingleton<StreamParams>();
+                services.AddSingleton<CommonParams>();
             })
             .Build();
         var app = host.Services.GetService<App>();

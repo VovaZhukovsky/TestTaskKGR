@@ -34,14 +34,16 @@
 
                 <TextBlock VerticalAlignment="Center"
                            Text="{Binding ElementName=ConfidenceTreshold, Path=Value, StringFormat={}{0:F2}}" />
-            
+
                 <CheckBox x:Name="EnableTracking"
-                      Content="Track Objects" />
-                      <!--Unchecked="EnableTracking_Unchecked"-->
+                      Content="Track Objects"
+                      Command="{Binding TrackingHandlerCommand.Track}" 
+                      CommandParameter="{Binding ElementName=EnableTracking}"/>
 
                 <CheckBox x:Name="EnableFiltering"
-                      Content="Enable Filtering ('person' only)" />
-                <!--Unchecked="EnableFiltering_Unchecked"-->
+                      Content="Enable Filtering ('person' only)"
+                      Command="{Binding FilterHandlerCommand.Filter}" 
+                      CommandParameter="{Binding ElementName=EnableFiltering}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Grid.Row="1" Margin="10,10,10,10">
                 <Button x:Name="Start"

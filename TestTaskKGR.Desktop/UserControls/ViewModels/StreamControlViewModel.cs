@@ -1,24 +1,47 @@
+using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using TestTaskKGR.Desktop.Commands;
 using TestTaskKGR.Desktop.Interfaces;
+using TestTaskKGR.Desktop.Model;
 
 namespace TestTaskKGR.Desktop.UserControls.ViewModels;
 
-public class Stream1ControlViewModel : INotifyPropertyChanged
+public class StreamControlViewModel : INotifyPropertyChanged
 {
     private ILogger _logger;
-    private Stream1ViewModel _streamViewModel;
+    private StreamViewModel _streamViewModel;
     private CancellationTokenSource _cancellationTokenSource;
     private bool _streamRunning;
     public event PropertyChangedEventHandler PropertyChanged;
+    private CommonParams _common;
     public ICommand StartStreamCommand { get; set; }
     public ICommand StopStreamCommand { get; set; }
+    private SKRect _rect;
+    public SKRect Rect
+    {
+        get => _rect;
+        set
+        {
+            _rect = value;
+            NotifyPropertyChanged();
+        }
+    }
+    private SKBitmap _currentFrame;
+    public SKBitmap CurrentFrame
+    {
+        get => _currentFrame;
+        set
+        {
+            _currentFrame = value;
+            NotifyPropertyChanged();
+        }
+    }
 
     private SKElement _streamFrame;
-    public SKElement Stream1Frame
+    public SKElement StreamFrame
     {
         get => _streamFrame;
         set
@@ -39,8 +62,9 @@ public class Stream1ControlViewModel : INotifyPropertyChanged
         }
     }
 
-   public Stream1ControlViewModel(ILogger logger, Stream1ViewModel streamViewModel)
+   public StreamControlViewModel(ILogger logger, StreamViewModel streamViewModel, CommonParams common)
     {
+        _common = common;
         _logger = logger;
         StartStreamCommand = new CommandHandler()
         {
@@ -53,6 +77,8 @@ public class Stream1ControlViewModel : INotifyPropertyChanged
             CanExecuteMethod = CanStopStream
         };
         _streamViewModel = streamViewModel;
+        _currentFrame = new SKBitmap(_common.StreamWidth, _common.StreamHeigth);
+        _rect = new SKRect(0, 0, _common.StreamWidth, bottom: _common.StreamHeigth);
     }
 
     protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")

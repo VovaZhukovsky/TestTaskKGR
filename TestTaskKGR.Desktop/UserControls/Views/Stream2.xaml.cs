@@ -11,7 +11,7 @@ public partial class Stream2 : UserControl
         {
             if (DataContext is MainWindowViewModel viewModel)
             {
-                viewModel.Stream2Control.Stream2Frame = Stream2Frame;
+                viewModel.Stream2Control.StreamFrame = Stream2Frame;
             }
         };
     }

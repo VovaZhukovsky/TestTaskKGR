@@ -1,33 +1,42 @@
 ﻿using TestTaskKGR.Desktop.Commands;
 using TestTaskKGR.Desktop.Implementations;
+using TestTaskKGR.Desktop.Model;
 using TestTaskKGR.Desktop.UserControls.ViewModels;
 
 namespace TestTaskKGR.Desktop;
 
 public class MainWindowViewModel
 {
-    public Stream1ControlViewModel Stream1Control { get; set; }
-    public Stream2ControlViewModel Stream2Control { get; set; }
+    public StreamControlViewModel Stream1Control { get; set; }
+    public StreamControlViewModel Stream2Control { get; set; }
     public SKPaintSurfaceBehavior SKPaintSurfaceBehavior { get; set; }
     public DetectionHandlerCommand DetectionHandlerCommand {  get; set; }
+    public FilterHandlerCommand FilterHandlerCommand { get; set; }
+    public TrackingHandlerCommand TrackingHandlerCommand { get; set; }
     public WpfLogger LogConsole { get; set; }
-    public Stream1ViewModel Stream1ViewModel { get; set; }
-    public Stream2ViewModel Stream2ViewModel { get; set; }
-    public RunDetection RunDetection { get; set; }
+    public StreamViewModel Stream1ViewModel { get; set; }
+    public StreamViewModel Stream2ViewModel { get; set; }
+    public StreamParams StreamParams { get; set; }
+    
 
     public MainWindowViewModel(
         WpfLogger wpfLogger, 
         SKPaintSurfaceBehavior sKPaintSurfaceBehavior,
-        RunDetection runDetection)
+        StreamParams runDetection,
+        CommonParams common)
     {
-        RunDetection = runDetection;
+        StreamParams = runDetection;
         LogConsole = wpfLogger;
-        DetectionHandlerCommand = new DetectionHandlerCommand(RunDetection, LogConsole);
-        Stream1ViewModel = new Stream1ViewModel(RunDetection);
-        Stream2ViewModel = new Stream2ViewModel(RunDetection);
+
+        DetectionHandlerCommand = new DetectionHandlerCommand(StreamParams, LogConsole);
+        FilterHandlerCommand = new FilterHandlerCommand(StreamParams, LogConsole);
+        TrackingHandlerCommand = new TrackingHandlerCommand(StreamParams, LogConsole);
+        Stream1ViewModel = new StreamViewModel(LogConsole,StreamParams, common);
+        Stream2ViewModel = new StreamViewModel(LogConsole,StreamParams, common);
         SKPaintSurfaceBehavior = sKPaintSurfaceBehavior;
-        Stream1Control = new Stream1ControlViewModel(LogConsole, Stream1ViewModel);
-        Stream2Control = new Stream2ControlViewModel(LogConsole, Stream2ViewModel);
-        
+        Stream1Control = new StreamControlViewModel(LogConsole, Stream1ViewModel, common);
+        Stream2Control = new StreamControlViewModel(LogConsole, Stream2ViewModel, common);
+
+
     }
 }

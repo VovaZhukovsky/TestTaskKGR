@@ -15,8 +15,8 @@
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
 		<PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1" />
 		<PackageReference Include="YoloDotNet" Version="3.1.1" />
-		<Resource Include="Onnx\bottle_best.onnx" />
-    	<Resource Include="Onnx\phone_best.onnx" />
-		<Resource Include="Onnx\yolo12m.onnx" />
+		<None Include="Onnx\*.onnx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>

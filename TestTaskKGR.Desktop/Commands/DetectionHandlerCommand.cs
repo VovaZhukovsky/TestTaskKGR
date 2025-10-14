@@ -7,12 +7,12 @@ namespace TestTaskKGR.Desktop.Commands;
 public class DetectionHandlerCommand
 {
     private ILogger _logger;
-    private RunDetection _runDetection;
+    private StreamParams _streamParams;
     public ICommand Detection { get; set; }
 
-    public DetectionHandlerCommand(RunDetection runDetection, ILogger logger)
+    public DetectionHandlerCommand(StreamParams streamParams, ILogger logger)
     {
-        _runDetection = runDetection;
+        _streamParams = streamParams;
         _logger = logger;
 
         Detection = new CommandHandler()
@@ -29,9 +29,9 @@ public class DetectionHandlerCommand
     {
         bool newDetectionStatus = bool.Parse(parameter as string);
 
-        _runDetection.Status = newDetectionStatus;
+        _streamParams.IsRunDetection = newDetectionStatus;
 
-        if (_runDetection.Status)
+        if (_streamParams.IsRunDetection)
             _logger.Log($"Отслеживание объектов включено");
         else
             _logger.Log($"Отслеживание объектов отключено");
