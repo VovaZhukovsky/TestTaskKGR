@@ -1,8 +1,6 @@
-﻿using System.IO;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TestTaskKGR.Desktop.Implementations;
-using WebcamDemo;
 
 namespace TestTaskKGR.Desktop;
 
@@ -16,8 +14,9 @@ public class Program
             {
                 services.AddSingleton<App>();
                 services.AddSingleton<WpfLogger>();
-                services.AddSingleton<StreamRunner>();
+                services.AddSingleton<SKPaintSurfaceBehavior>();
                 services.AddSingleton<MainWindow>();
+                services.AddSingleton<RunDetection>();
             })
             .Build();
         var app = host.Services.GetService<App>();

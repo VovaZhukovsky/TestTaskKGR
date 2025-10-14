@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:TestTaskKGR.Desktop"
         xmlns:views="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
+        xmlns:viewmodel="clr-namespace:TestTaskKGR.Desktop" d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="Stream Detection" Height="810" Width="1400">
 	<Grid x:Name="MainGrid">
@@ -13,14 +14,14 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="5">
-            <views:Stream1 x:Name="Stream1View" DataContext="{Binding Stream1}"/>
-            <views:Stream1Control x:Name="Stream1ViewControl" DataContext="{Binding Stream1Control}"/>
-            <views:LogConsole x:Name="LogConsoleControl" DataContext="{Binding LogConsole}"/>
+            <views:Stream1 x:Name="Stream1View" />
+            <views:Stream1Control x:Name="Stream1ViewControl" />
+            <views:LogConsole x:Name="LogConsoleControl" />
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" Margin="5">
-            <views:Stream2 x:Name="Stream2View" DataContext="{Binding Stream2}"/>
-            <views:Stream2Control x:Name="Stream2ViewControl" DataContext="{Binding Stream2Control}"/>
-            <views:StreamsDetection x:Name="StreamsDetectionControl" DataContext="{Binding StreamsDetection}"/>
+            <views:Stream2 x:Name="Stream2View" />
+            <views:Stream2Control x:Name="Stream2ViewControl" />
+            <views:StreamsDetection x:Name="StreamsDetectionControl"/>
         </StackPanel>
     </Grid>
 </Window>

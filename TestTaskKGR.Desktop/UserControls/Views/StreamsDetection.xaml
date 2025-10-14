@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
+             xmlns:viewmodel="clr-namespace:TestTaskKGR.Desktop" d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="210" d:DesignWidth="650">
     <UserControl.Resources>
@@ -43,14 +44,15 @@
                 <!--Unchecked="EnableFiltering_Unchecked"-->
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Grid.Row="1" Margin="10,10,10,10">
-                <!-- Buttons -->
                 <Button x:Name="Start"
-                    Content="Start Detection"/>
-                <!-- Click="StartClick"-->
+                    Content="Start Detection" 
+                    Command="{Binding DetectionHandlerCommand.Detection}" 
+                    CommandParameter="true"/>
 
                 <Button x:Name="Stop"
-                    Content="Stop Detection"/>
-                   <!-- Click="StopClick"-->
+                    Content="Stop Detection" 
+                    Command="{Binding DetectionHandlerCommand.Detection}" 
+                    CommandParameter="false"/>
             </StackPanel>
         </Grid>
     </GroupBox>

@@ -3,17 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:TestTaskKGR.Desktop.Implementations"
              xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
+             xmlns:viewmodel="clr-namespace:TestTaskKGR.Desktop" d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="490" d:DesignWidth="650">
     <GroupBox Header="Стрим 2" HorizontalAlignment="Center" Height="480" VerticalAlignment="Center" Width="640">
-        <skia:SKElement x:Name="Stream1Frame"
+        <skia:SKElement x:Name="Stream2Frame"
             Grid.Column="0"
             Width="640"
             Height="480"
             HorizontalAlignment="Center"
-            VerticalAlignment="Top"/>
-        <!--PaintSurface="UpdateStreamFrame" />-->
+            VerticalAlignment="Top">
+            <i:Interaction.Behaviors>
+                <local:SKPaintSurfaceBehavior Command="{Binding Stream2ViewModel.UpdateStreamFrameCommand}"/>
+            </i:Interaction.Behaviors>
+        </skia:SKElement>
     </GroupBox>
 </UserControl>

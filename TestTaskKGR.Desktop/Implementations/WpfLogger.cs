@@ -41,7 +41,7 @@ public class WpfLogger : INotifyPropertyChanged, ILogger
                 _textHolder.AppendLine();
                 LogMessage = _textHolder.ToString();
 
-                if(_textHolder.Length > 500)
+                if(_textHolder.Length > 10000)
                 {
                     _textHolder.Remove(0, 100);
                     int indexOfNewLine = _textHolder.ToString().IndexOfAny(new char[] { '\r', '\n' });

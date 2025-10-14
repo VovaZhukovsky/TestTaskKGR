@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:local="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
+             xmlns:local="clr-namespace:TestTaskKGR.Desktop.Implementations"
              xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
+             xmlns:viewmodel="clr-namespace:TestTaskKGR.Desktop" d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="490" d:DesignWidth="650">
     <GroupBox Header="Стрим 1" HorizontalAlignment="Center" Height="480" VerticalAlignment="Center" Width="640">
@@ -15,11 +16,9 @@
                 Height="480"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="PaintSurface">
-                    <i:InvokeCommandAction Command="{Binding UpdateStreamFrameCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-            </skia:SKElement>
+            <i:Interaction.Behaviors>
+                <local:SKPaintSurfaceBehavior Command="{Binding Stream1ViewModel.UpdateStreamFrameCommand}"/>
+            </i:Interaction.Behaviors>
+        </skia:SKElement>
     </GroupBox>
 </UserControl>
