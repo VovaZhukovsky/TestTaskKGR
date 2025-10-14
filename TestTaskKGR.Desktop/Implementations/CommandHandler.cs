@@ -5,6 +5,12 @@ namespace TestTaskKGR.Desktop.Implementations;
 
 public class CommandHandler : ICommand
 {
+    public CommandHandler(Action<object> method, Func<object, bool> canExecuteMethod = null)
+        {
+            this.Method = method;
+            this.CanExecuteMethod = canExecuteMethod;
+        }
+
     public event EventHandler CanExecuteChanged
     {
         add { CommandManager.RequerySuggested += value; }

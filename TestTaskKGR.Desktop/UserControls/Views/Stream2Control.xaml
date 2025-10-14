@@ -17,9 +17,9 @@
     <GroupBox Header="Управление стримом 2" HorizontalAlignment="Center" Height="75" VerticalAlignment="Top" Width="640"  Margin="10,0,10,0">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <Label Content="URL" VerticalAlignment="Center"/>
-            <TextBox Width="300" Height="30"/>
-            <Button Content="Старт" />
-            <Button Content="Стоп"/>
+            <TextBox Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}" Width="300" Height="30"/>
+            <Button Content="Старт" Command="{Binding StartStream2Command}" />
+            <Button Content="Стоп" Command="{Binding StopStream2Command}" />
         </StackPanel>
     </GroupBox>
 </UserControl>

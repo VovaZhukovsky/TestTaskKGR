@@ -37,9 +37,19 @@ public class WpfLogger : INotifyPropertyChanged, ILogger
         {
             lock (_syncObject)
             {
-                _textHolder.Append(message);
+                _textHolder.Append($"{DateTime.Now } {message}");
                 _textHolder.AppendLine();
                 LogMessage = _textHolder.ToString();
+
+                if(_textHolder.Length > 500)
+                {
+                    _textHolder.Remove(0, 100);
+                    int indexOfNewLine = _textHolder.ToString().IndexOfAny(new char[] { '\r', '\n' });
+                    if(indexOfNewLine != -1)
+                    {
+                        _textHolder.Remove(0, indexOfNewLine + 2);
+                    }
+                }
             }
         }
         catch (Exception ex)

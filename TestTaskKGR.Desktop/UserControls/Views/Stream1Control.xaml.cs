@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SkiaSharp.Views.WPF;
 
 namespace TestTaskKGR.Desktop.UserControls.Views
 {
@@ -20,6 +21,8 @@ namespace TestTaskKGR.Desktop.UserControls.Views
     /// </summary>
     public partial class Stream1Control : UserControl
     {
+        public SKElement Stream1FrameControl => Stream1Frame;
+
         public Stream1Control()
         {
             InitializeComponent();

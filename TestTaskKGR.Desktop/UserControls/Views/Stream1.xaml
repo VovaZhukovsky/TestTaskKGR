@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
              xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
              mc:Ignorable="d" 
@@ -13,7 +14,12 @@
                 Width="640"
                 Height="480"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Top"/>
-        <!--PaintSurface="UpdateStreamFrame" />-->
+                VerticalAlignment="Top">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PaintSurface">
+                    <i:InvokeCommandAction Command="{Binding UpdateStreamFrameCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            </skia:SKElement>
     </GroupBox>
 </UserControl>

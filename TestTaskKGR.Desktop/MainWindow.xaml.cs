@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TestTaskKGR.Desktop.Implementations;
+using WebcamDemo;
 
 namespace TestTaskKGR.Desktop;
 
@@ -18,9 +19,11 @@ namespace TestTaskKGR.Desktop;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow( WpfLogger wpfLogger)
+    public MainWindow(WpfLogger wpfLogger, StreamRunner streamRunner)
     {
-        DataContext = new MainWindowViewModel(wpfLogger);
+        var skElement = Stream1View.Stream1FrameControl;
+
+        DataContext = new MainWindowViewModel(this, wpfLogger,streamRunner);
         InitializeComponent();
 
     }
