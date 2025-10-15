@@ -19,6 +19,10 @@ public class RoleRepository : IRepository<RoleViewModel>
     {
         return _dbcontext.Roles.Find(id).Adapt<RoleViewModel>();
     }
+    public RoleViewModel? GetItemByName(string name)
+    {
+        return _dbcontext.Roles.Where(r => r.Name == name).FirstOrDefault().Adapt<RoleViewModel>();
+    }
     public RoleViewModel Create(RoleViewModel role)
     {
         return _dbcontext.Roles.Add(role.Adapt<Role>()).Entity.Adapt<RoleViewModel>();

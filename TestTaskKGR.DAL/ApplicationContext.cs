@@ -12,7 +12,7 @@ public class ApplicationContext: DbContext
     public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options){}
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=violationdb;Username=postgres;Password=12345");
+        optionsBuilder.UseSqlite("Data Source=testtaskkgr.db");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

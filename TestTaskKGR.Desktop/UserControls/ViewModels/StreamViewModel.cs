@@ -26,6 +26,10 @@ using System.Windows.Controls;
 using TestTaskKGR.Desktop.Interfaces;
 using static Emgu.CV.Dai.OpenVino;
 using System.Drawing;
+using YoloDotNet.Video.Services;
+using TestTaskKGR.ApiClient;
+using YoloDotNet.Video;
+using System.IO;
 
 namespace TestTaskKGR.Desktop.UserControls.ViewModels;
 
@@ -39,6 +43,7 @@ public partial class StreamViewModel : INotifyPropertyChanged
     private readonly SortTracker _sortTracker = default!;
     public StreamParams _streamParams;
     private SKRect _rect;
+    
     public SKRect Rect
     {
         get => _rect;
@@ -62,6 +67,7 @@ public partial class StreamViewModel : INotifyPropertyChanged
     private SKImageInfo _imageInfo = default!;
     private string _stream;
     public SKElement _element;
+    private string _outputFolder = default!;
     private VideoCapture _capture;
     private CommonParams _common;
     private List<ObjectDetection> _roi;
@@ -70,9 +76,13 @@ public partial class StreamViewModel : INotifyPropertyChanged
     private DateTime _lastMotionTime;
     private Dictionary<int, PointF> _lastPositions = new Dictionary<int, PointF>();
     public ICommand UpdateStreamFrameCommand { get; set; }
-    public StreamViewModel(ILogger logger, StreamParams streamParams, CommonParams common)
+    private PersonHandler _personHandler;
+    private TestTaskKGRApiClient _httpClient;
+    public StreamViewModel(ILogger logger, StreamParams streamParams, CommonParams common, TestTaskKGRApiClient httpClient)
     {
+        _httpClient = httpClient;
         _logger = logger;
+        _personHandler = new PersonHandler(_logger,_httpClient);
         _common = common;
         _streamParams = streamParams;
         UpdateStreamFrameCommand = new CommandHandler()
@@ -131,11 +141,27 @@ public partial class StreamViewModel : INotifyPropertyChanged
         using var bgraMat = new Mat();
         using var resizeMat = new Mat();
 
+        // обработка видео
+
+       /* _yolo.InitializeVideo(new VideoOptions
+        {
+            VideoInput = _stream,
+            VideoOutput = Path.Combine(_outputFolder, "video_output.mp4"),
+            FrameRate = FrameRate.AUTO,
+            Width = 720,
+            Height = -2,
+            CompressionQuality = 30,
+            VideoChunkDuration = 0,
+            FrameInterval = 0
+        });
+        _yolo.StartVideoProcessing();*/
+        // обработка видео
+
         while (!cancellationToken.IsCancellationRequested)
         {
             // Capture the current frame from the webcam
             capture.Read(mat);
-            CvInvoke.Resize(mat, resizeMat, new System.Drawing.Size(640, 480), 0, 0, Inter.Linear);
+            CvInvoke.Resize(mat, resizeMat, new System.Drawing.Size(_common.StreamWidth, _common.StreamHeigth), 0, 0, Inter.Linear);
             CvInvoke.CvtColor(resizeMat, bgraMat, ColorConversion.Bgr2Bgra);
 
             //Create an SKBitmap from the BGRA Mat for processing
@@ -150,47 +176,44 @@ public partial class StreamViewModel : INotifyPropertyChanged
                     if (results.Count() != 0)
                     {
 
-                        await PersonHandler.FindPersonByRoleAsync(results, _common.SellerLabel, _common.SellerRoiStream1.BoundingBox);
+                        await _personHandler.FindPersonByRoleAsync(results, _common.SellerLabel, _common.SellerRoiStream1.BoundingBox);
 
-                        await PersonHandler.FindPersonByRoleAsync(results, _common.CustomerLabel, _common.CustomerRoiStream1.BoundingBox);
-                        var personsRoi = await PersonHandler.GetPersonRoiAsync(results.FilterLabels(["seller", "customer"]));
+                        await _personHandler.FindPersonByRoleAsync(results, _common.CustomerLabel, _common.CustomerRoiStream1.BoundingBox);
+                        var personsRoi = await _personHandler.GetPersonRoiAsync(results.FilterLabels(["seller", "customer"]));
                         results.AddRange(personsRoi);
                         if (resultsBottle.Count() != 0)
                         {
-                            await PersonHandler.FindBottleAsync(personsRoi, resultsBottle);
+                            await _personHandler.FindBottleAsync(personsRoi, resultsBottle);
                         }
                         if (resultsPhone.Count() != 0)
                         {
                             if (personsRoi.FilterLabels(["customerRoi"]).Count() != 0)
                             {
-                                await PersonHandler.FindPhoneAsync(personsRoi.FilterLabels(["sellerRoi"]), resultsPhone);
+                                await _personHandler.FindPhoneAsync(personsRoi.FilterLabels(["sellerRoi"]), resultsPhone);
                             }
 
                         }
 
                     }
-                    if (_streamParams.IsFilterEnabled)
-                        results = results.FilterLabels(["seller", "customer"]);  // Optionally filter results to include only specific classes (e.g., "person", "cat", "dog")
+                if (_streamParams.IsFilterEnabled)
+                        results = results.FilterLabels(["seller", "customer"]);
+                        resultsPhone = resultsPhone.FilterLabels(["phone"]);
+                        resultsBottle = resultsBottle.FilterLabels(["bottle"]);
                     if (_streamParams.IsTrackingEnabled)
                     {
-                        var tracked = results.Track(_sortTracker);    // Optionally track objects using the SortTracker
-                         
-                        // Draw detection and tracking results on the current frame
-                         //results.Add(region);
-                         //results.Add(region2);
-                         //_currentFrame.Draw(regions);
+                        var tracked = results.Track(_sortTracker);                      
                     }
-
+                results.Add(_common.SellerRoiStream1);
+                results.Add(_common.CustomerRoiStream1);
                 _currentFrame.Draw(results);
                     _currentFrame.Draw(resultsPhone.FilterLabels(["phone", "cell", "cell_phone", "mobile", "smartphone"]));
-                    _currentFrame.Draw(resultsBottle.FilterLabels(["bottle"]));
-
-               
+                _currentFrame.Draw(resultsBottle.FilterLabels(["bottle"]));
+                    
             }
             // Update GUI
             await _dispatcher.InvokeAsync(() =>
             {
-                _element.InvalidateVisual(); // Notify SKiaSharp to update the frame.
+                _element.InvalidateVisual();
               
             });
         }
@@ -203,7 +226,7 @@ public partial class StreamViewModel : INotifyPropertyChanged
             _yolo?.Dispose();
             _yoloBottle?.Dispose();
             _yoloPhone?.Dispose();
-            _element.InvalidateVisual(); // Notify SKiaSharp to update the frame.
+            _element.InvalidateVisual(); 
             _yolo?.Dispose();
 
         });

@@ -19,8 +19,7 @@ try
         .AddScoped<IRepository<TypeViewModel>, TypeRepository>()
         .AddScoped<IRepository<RoleViewModel>, RoleRepository>()
         .AddScoped<IRepository<ViolationViewModel>, ViolationRepository>()
-        .AddDbContext<ApplicationContext>(options => options.UseNpgsql("Host=localhost;Port=5432;Database=violationdb;Username=postgres;Password=12345",
-            providerOptions => providerOptions.EnableRetryOnFailure()), ServiceLifetime.Transient)
+        .AddDbContext<ApplicationContext>(options => options.UseSqlite("Data Source=testtaskkgr.db"))
         .AddControllers();
     builder.Services.AddSwaggerGen();
 

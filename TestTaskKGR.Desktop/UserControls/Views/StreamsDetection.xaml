@@ -39,7 +39,7 @@
                       CommandParameter="{Binding ElementName=EnableTracking}"/>
 
                 <CheckBox x:Name="EnableFiltering"
-                      Content="Enable Filtering ('persons' only)"
+                      Content="Enable Filtering ('persons, phone, bottle' only)"
                       Command="{Binding FilterHandlerCommand.Filter}" 
                       CommandParameter="{Binding ElementName=EnableFiltering}"/>
             </StackPanel>

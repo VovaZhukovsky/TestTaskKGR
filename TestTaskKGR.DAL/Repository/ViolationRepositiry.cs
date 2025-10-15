@@ -19,6 +19,10 @@ public class ViolationRepository : IRepository<ViolationViewModel>
     {
         return _dbcontext.Violations.Find(id).Adapt<ViolationViewModel>();
     }
+    public ViolationViewModel? GetItemByName(string name)
+    {
+        return _dbcontext.Types.Where(v => v.Name == name).FirstOrDefault().Adapt<ViolationViewModel>();
+    }
     public ViolationViewModel Create(ViolationViewModel Violation)
     {
         return _dbcontext.Violations.Add(Violation.Adapt<Violation>()).Entity.Adapt<ViolationViewModel>();

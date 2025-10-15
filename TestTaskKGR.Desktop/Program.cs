@@ -2,6 +2,11 @@
 using Microsoft.Extensions.Hosting;
 using TestTaskKGR.Desktop.Implementations;
 using TestTaskKGR.Desktop.Model;
+using Microsoft.Extensions.Http;
+using TestTaskKGR.Desktop.Commands;
+using TestTaskKGR.Desktop.UserControls.ViewModels;
+using TestTaskKGR.ApiClient;
+using Microsoft.Extensions.Configuration;
 
 namespace TestTaskKGR.Desktop;
 
@@ -11,15 +16,22 @@ public class Program
     public static void Main()
     {
         var host = Host.CreateDefaultBuilder()
-            .ConfigureServices(services =>
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            })
+            .ConfigureServices((context,services) =>
             {
                 services.AddSingleton<App>();
                 services.AddSingleton<WpfLogger>();
-                services.AddSingleton<SKPaintSurfaceBehavior>();
-                services.AddSingleton<ConfidentTrasholdSliderBehavior>();
                 services.AddSingleton<MainWindow>();
-                services.AddSingleton<StreamParams>();
-                services.AddSingleton<CommonParams>();
+                services.AddTransient<StreamParams>();
+                services.AddTransient<CommonParams>();
+                services.AddSingleton<MainWindowViewModel>();
+                services.AddHttpClient<TestTaskKGRApiClient>(client =>
+                    {
+                        client.BaseAddress = new Uri(context.Configuration["TestTaskKGRApiUri"]);
+                    });
             })
             .Build();
         var app = host.Services.GetService<App>();

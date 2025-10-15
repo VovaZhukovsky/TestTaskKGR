@@ -19,6 +19,10 @@ public class TypeRepository : IRepository<TypeViewModel>
     {
         return _dbcontext.Types.Find(id).Adapt<TypeViewModel>();
     }
+    public TypeViewModel? GetItemByName(string name)
+    {
+        return _dbcontext.Types.Where(t => t.Name == name).FirstOrDefault().Adapt<TypeViewModel>();
+    }
     public TypeViewModel Create(TypeViewModel Type)
     {
         return _dbcontext.Types.Add(Type.Adapt<Type>()).Entity.Adapt<TypeViewModel>();

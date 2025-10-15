@@ -1,4 +1,5 @@
-﻿using TestTaskKGR.Desktop.Commands;
+﻿using TestTaskKGR.ApiClient;
+using TestTaskKGR.Desktop.Commands;
 using TestTaskKGR.Desktop.Implementations;
 using TestTaskKGR.Desktop.Model;
 using TestTaskKGR.Desktop.UserControls.ViewModels;
@@ -16,25 +17,24 @@ public class MainWindowViewModel
     public WpfLogger LogConsole { get; set; }
     public StreamViewModel Stream1ViewModel { get; set; }
     public StreamViewModel Stream2ViewModel { get; set; }
-    public StreamParams StreamParams { get; set; }
+    private PersonHandler _personHandler;
     
 
     public MainWindowViewModel(
         WpfLogger wpfLogger,
         StreamParams streamParams,
-        CommonParams common)
+        CommonParams commonParams,
+        TestTaskKGRApiClient httpClient)
     {
-        StreamParams = streamParams;
         LogConsole = wpfLogger;
-
-        ConfidentTrasholdCommand = new ConfidentTrasholdCommand(StreamParams, LogConsole);
-        DetectionHandlerCommand = new DetectionHandlerCommand(StreamParams, LogConsole);
-        FilterHandlerCommand = new FilterHandlerCommand(StreamParams, LogConsole);
-        TrackingHandlerCommand = new TrackingHandlerCommand(StreamParams, LogConsole);
-        Stream1ViewModel = new StreamViewModel(LogConsole,StreamParams, common);
-        Stream2ViewModel = new StreamViewModel(LogConsole,StreamParams, common);
-        Stream1Control = new StreamControlViewModel(LogConsole, Stream1ViewModel, common);
-        Stream2Control = new StreamControlViewModel(LogConsole, Stream2ViewModel, common);
+        ConfidentTrasholdCommand = new ConfidentTrasholdCommand(streamParams,LogConsole);
+        DetectionHandlerCommand = new DetectionHandlerCommand(streamParams, LogConsole);
+        FilterHandlerCommand = new FilterHandlerCommand(streamParams,LogConsole);
+        TrackingHandlerCommand = new TrackingHandlerCommand(streamParams,LogConsole);
+        Stream1ViewModel = new StreamViewModel(LogConsole,streamParams,commonParams,httpClient);
+        Stream2ViewModel = new StreamViewModel(LogConsole,streamParams,commonParams,httpClient);
+        Stream1Control = new StreamControlViewModel(LogConsole,Stream1ViewModel,commonParams);
+        Stream2Control = new StreamControlViewModel(LogConsole,Stream2ViewModel,commonParams);
 
 
     }

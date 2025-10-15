@@ -6,12 +6,9 @@ namespace TestTaskKGR.Desktop;
 
 public partial class MainWindow : Window
 {
-    public MainWindow(
-        WpfLogger wpfLogger,
-        StreamParams streamParams,
-        CommonParams common)
+    public MainWindow(MainWindowViewModel mainWindowViewModel)
     {
         InitializeComponent();
-        DataContext = new MainWindowViewModel(wpfLogger, streamParams, common);
+        DataContext = mainWindowViewModel;
     }
 }

@@ -20,13 +20,18 @@ namespace TestTaskKGR.Api
         {
             var response = _repo.Create(client);
             _repo.Save();
-            return StatusCode(200,response);
+            return StatusCode(201,null);
         }
 
         [HttpGet("{id}")]
         public ActionResult Get([FromRoute] int id)
         {
             return StatusCode(200, _repo.GetItem(id));
+        }
+        [HttpGet("{name}/name")]
+        public ActionResult GetByName([FromRoute] string name)
+        {
+            return StatusCode(200, _repo.GetItemByName(name));
         }
 
         [HttpDelete("{id}")]
