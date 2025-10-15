@@ -16,6 +16,7 @@ public class Program
                 services.AddSingleton<App>();
                 services.AddSingleton<WpfLogger>();
                 services.AddSingleton<SKPaintSurfaceBehavior>();
+                services.AddSingleton<ConfidentTrasholdSliderBehavior>();
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<StreamParams>();
                 services.AddSingleton<CommonParams>();

@@ -7,12 +7,11 @@ namespace TestTaskKGR.Desktop;
 public partial class MainWindow : Window
 {
     public MainWindow(
-        WpfLogger wpfLogger, 
-        SKPaintSurfaceBehavior sKPaintSurfaceBehavior,
-        StreamParams runDetection,
+        WpfLogger wpfLogger,
+        StreamParams streamParams,
         CommonParams common)
     {
         InitializeComponent();
-        DataContext = new MainWindowViewModel(wpfLogger, sKPaintSurfaceBehavior, runDetection,common);
+        DataContext = new MainWindowViewModel(wpfLogger, streamParams, common);
     }
 }

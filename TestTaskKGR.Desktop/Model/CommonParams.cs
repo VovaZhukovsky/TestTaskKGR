@@ -25,28 +25,9 @@ public class CommonParams
     };
     public LabelModel SellerLabel = new LabelModel { Name = "seller" };
     public LabelModel CustomerLabel = new LabelModel { Name = "customer" };
-
-    public async Task FindPersonByRoleAsync(List<ObjectDetection> results, LabelModel label, SKRectI boundinxbox)
-    {
-        var personsRoi = results.Where(r => r.Label.Name == "person").Where(p => p.BoundingBox.IntersectsWith(boundinxbox)).ToList();
-        if (personsRoi.Count() > 0)
-        {
-            var persons = personsRoi.Select(p => new ObjectDetection() { BoundingBox = p.BoundingBox, Confidence = p.Confidence, Id = p.Id, Label = label, Tail = p.Tail }).ToList();
-
-            foreach (var person in persons)
-            {
-                var index = results.FindIndex(i => i.Id == person.Id);
-
-                if (index != -1)
-                    results[index] = person;
-            }
-
-
-        };
-    }
 }
 
-public enum Role
+public enum Role // подключить viewmodel class
 {
     Seller,
     Customer

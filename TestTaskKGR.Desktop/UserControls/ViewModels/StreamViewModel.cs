@@ -24,6 +24,8 @@ using OpenTK.Platform.Windows;
 using TestTaskKGR.Desktop.Model;
 using System.Windows.Controls;
 using TestTaskKGR.Desktop.Interfaces;
+using static Emgu.CV.Dai.OpenVino;
+using System.Drawing;
 
 namespace TestTaskKGR.Desktop.UserControls.ViewModels;
 
@@ -58,12 +60,15 @@ public partial class StreamViewModel : INotifyPropertyChanged
     }
     private Dispatcher _dispatcher = default!;
     private SKImageInfo _imageInfo = default!;
-    private double _confidenceThreshold;
     private string _stream;
     public SKElement _element;
     private VideoCapture _capture;
     private CommonParams _common;
     private List<ObjectDetection> _roi;
+    private DateTime _streamStartTime;
+    private DateTime _firstMotionTime;
+    private DateTime _lastMotionTime;
+    private Dictionary<int, PointF> _lastPositions = new Dictionary<int, PointF>();
     public ICommand UpdateStreamFrameCommand { get; set; }
     public StreamViewModel(ILogger logger, StreamParams streamParams, CommonParams common)
     {
@@ -115,6 +120,7 @@ public partial class StreamViewModel : INotifyPropertyChanged
     }
     public async Task StreamAsync(string stream, SKElement element, CancellationToken cancellationToken = default)
     {
+        _streamStartTime = DateTime.Now;
         _element = element;
         _stream = stream;
         using var capture = new VideoCapture(_stream, VideoCapture.API.Ffmpeg);
@@ -137,64 +143,49 @@ public partial class StreamViewModel : INotifyPropertyChanged
             _currentFrame = SKBitmap.FromImage(frame);
             if (_streamParams.IsRunDetection)
             {
-                // Run object detection on the current frame
-                var resultsBottle = _yoloBottle.RunObjectDetection(_currentFrame, 0.5, iou: 0.1);
-                var resultsPhone = _yoloPhone.RunObjectDetection(_currentFrame, 0.2, iou: 0.1);
-                var results = _yolo.RunObjectDetection(_currentFrame, 0.2, iou: 0.1);
-                if (results.Count() != 0)
-                {
-                    await _common.FindPersonByRoleAsync(results, _common.SellerLabel, _common.SellerRoiStream1.BoundingBox);
-
-                    await _common.FindPersonByRoleAsync(results, _common.CustomerLabel, _common.CustomerRoiStream1.BoundingBox);
-
-                    foreach (var person in results.Where(r => r.Label.Name == "seller").ToList())
+                    // Run object detection on the current frame
+                    var resultsBottle = _yoloBottle.RunObjectDetection(_currentFrame, _streamParams.ConfidenceThreshold, iou: 0.1);
+                    var resultsPhone = _yoloPhone.RunObjectDetection(_currentFrame, _streamParams.ConfidenceThreshold, iou: 0.1);
+                    var results = _yolo.RunObjectDetection(_currentFrame, _streamParams.ConfidenceThreshold, iou: 0.1);
+                    if (results.Count() != 0)
                     {
-                        var personRoi = new ObjectDetection
+
+                        await PersonHandler.FindPersonByRoleAsync(results, _common.SellerLabel, _common.SellerRoiStream1.BoundingBox);
+
+                        await PersonHandler.FindPersonByRoleAsync(results, _common.CustomerLabel, _common.CustomerRoiStream1.BoundingBox);
+                        var personsRoi = await PersonHandler.GetPersonRoiAsync(results.FilterLabels(["seller", "customer"]));
+                        results.AddRange(personsRoi);
+                        if (resultsBottle.Count() != 0)
                         {
-                            BoundingBox = new SKRectI
-                            {
-                                Location = new SKPointI
-                                {
-                                    X = person.BoundingBox.Left - 40,
-                                    Y = person.BoundingBox.Top - 40
-                                },
-                                Size = new SKSizeI
-                                {
-                                    Width = person.BoundingBox.Width + 80,  // 40 слева + 40 справа
-                                    Height = person.BoundingBox.Height + 80 // 40 сверху + 40 снизу
-                                }
-                            },
-                            Label = new LabelModel { Name = "seller_roi" },
-                            Confidence = person.Confidence,
-                            Id = person.Id
-                        };
-                        if(resultsBottle.Count > 0)
-                        {
-                            if(resultsBottle.Any(bottle => personRoi.BoundingBox.Contains(bottle.BoundingBox)))
-                            {
-                                _logger.Log($"Нарушение {person.Label.Name} пьет воду");
-                            }
+                            await PersonHandler.FindBottleAsync(personsRoi, resultsBottle);
                         }
-                        results.Add(personRoi);
+                        if (resultsPhone.Count() != 0)
+                        {
+                            if (personsRoi.FilterLabels(["customerRoi"]).Count() != 0)
+                            {
+                                await PersonHandler.FindPhoneAsync(personsRoi.FilterLabels(["sellerRoi"]), resultsPhone);
+                            }
+
+                        }
+
+                    }
+                    if (_streamParams.IsFilterEnabled)
+                        results = results.FilterLabels(["seller", "customer"]);  // Optionally filter results to include only specific classes (e.g., "person", "cat", "dog")
+                    if (_streamParams.IsTrackingEnabled)
+                    {
+                        var tracked = results.Track(_sortTracker);    // Optionally track objects using the SortTracker
+                         
+                        // Draw detection and tracking results on the current frame
+                         //results.Add(region);
+                         //results.Add(region2);
+                         //_currentFrame.Draw(regions);
                     }
 
-                    //results = results.Where(r => r.Label.Name == "person").Where(p => p.BoundingBox.IntersectsWith(region2.BoundingBox)).ToList().Select(p => new ObjectDetection(){ BoundingBox = p.BoundingBox, Confidence = p.Confidence, Id = p.Id, Label = CustomerLabel, Tail = p.Tail}).ToList();
-                    //var seller = persons.Where(p => p.BoundingBox.IntersectsWith(region.BoundingBox));
-
-                }
-                //if (_streamParams.IsFilterEnabled)
-                //results = results.FilterLabels(["seller", "customer"]);  // Optionally filter results to include only specific classes (e.g., "person", "cat", "dog")
-                if (_streamParams.IsTrackingEnabled)
-                    results.Track(_sortTracker); // Optionally track objects using the SortTracker
-                // Draw detection and tracking results on the current frame
-                //results.Add(region);
-                //results.Add(region2);
-                //_currentFrame.Draw(regions);
                 _currentFrame.Draw(results);
-                _currentFrame.Draw(resultsPhone.FilterLabels(["phone", "cell", "cell_phone", "mobile", "smartphone"]));
-                _currentFrame.Draw(resultsBottle.FilterLabels(["bottle"]));
-                //_currentFrame.Draw(resultsPhone);
-                //_currentFrame.Draw(resultsBottle);
+                    _currentFrame.Draw(resultsPhone.FilterLabels(["phone", "cell", "cell_phone", "mobile", "smartphone"]));
+                    _currentFrame.Draw(resultsBottle.FilterLabels(["bottle"]));
+
+               
             }
             // Update GUI
             await _dispatcher.InvokeAsync(() =>
@@ -206,13 +197,18 @@ public partial class StreamViewModel : INotifyPropertyChanged
         
         await _dispatcher.InvokeAsync(() =>
         {
+            _streamParams.IsRunDetection = false;
             _currentFrame.Dispose();
             _currentFrame = null;
+            _yolo?.Dispose();
+            _yoloBottle?.Dispose();
+            _yoloPhone?.Dispose();
             _element.InvalidateVisual(); // Notify SKiaSharp to update the frame.
+            _yolo?.Dispose();
 
         });
     }
-    public void UpdateStreamFrame(object parameter)
+    private void UpdateStreamFrame(object parameter)
     {
         SKPaintSurfaceEventArgs? e = parameter as SKPaintSurfaceEventArgs;
         if (e != null)
@@ -230,8 +226,15 @@ public partial class StreamViewModel : INotifyPropertyChanged
                 
         }
     }
-    public bool CanUpdateStreamFrame(object parameter)
+    private bool CanUpdateStreamFrame(object parameter)
     {
         return true;
     }
+
+    //ai//
+    private PointF GetCenter(RectangleF rect)
+    => new PointF(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+
+    private float Distance(PointF a, PointF b)
+        => (float)Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
 }
