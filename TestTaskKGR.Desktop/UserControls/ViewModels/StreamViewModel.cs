@@ -20,16 +20,10 @@ using YoloDotNet.Trackers;
 using YoloDotNet;
 using YoloDotNet.Extensions;
 using TestTaskKGR.Desktop.Implementations;
-using OpenTK.Platform.Windows;
 using TestTaskKGR.Desktop.Model;
-using System.Windows.Controls;
 using TestTaskKGR.Desktop.Interfaces;
-using static Emgu.CV.Dai.OpenVino;
 using System.Drawing;
-using YoloDotNet.Video.Services;
 using TestTaskKGR.ApiClient;
-using YoloDotNet.Video;
-using System.IO;
 
 namespace TestTaskKGR.Desktop.UserControls.ViewModels;
 
@@ -76,13 +70,11 @@ public partial class StreamViewModel : INotifyPropertyChanged
     private DateTime _lastMotionTime;
     private Dictionary<int, PointF> _lastPositions = new Dictionary<int, PointF>();
     public ICommand UpdateStreamFrameCommand { get; set; }
-    private PersonHandler _personHandler;
     private TestTaskKGRApiClient _httpClient;
     public StreamViewModel(ILogger logger, StreamParams streamParams, CommonParams common, TestTaskKGRApiClient httpClient)
     {
         _httpClient = httpClient;
         _logger = logger;
-        _personHandler = new PersonHandler(_logger,_httpClient);
         _common = common;
         _streamParams = streamParams;
         UpdateStreamFrameCommand = new CommandHandler()
@@ -176,20 +168,20 @@ public partial class StreamViewModel : INotifyPropertyChanged
                     if (results.Count() != 0)
                     {
 
-                        await _personHandler.FindPersonByRoleAsync(results, _common.SellerLabel, _common.SellerRoiStream1.BoundingBox);
+                        await FindPersonByRoleAsync(results, _common.SellerLabel, _common.SellerRoiStream1.BoundingBox);
 
-                        await _personHandler.FindPersonByRoleAsync(results, _common.CustomerLabel, _common.CustomerRoiStream1.BoundingBox);
-                        var personsRoi = await _personHandler.GetPersonRoiAsync(results.FilterLabels(["seller", "customer"]));
+                        await FindPersonByRoleAsync(results, _common.CustomerLabel, _common.CustomerRoiStream1.BoundingBox);
+                        var personsRoi = await GetPersonRoiAsync(results.FilterLabels(["seller", "customer"]));
                         results.AddRange(personsRoi);
                         if (resultsBottle.Count() != 0)
                         {
-                            await _personHandler.FindBottleAsync(personsRoi, resultsBottle);
+                            await FindBottleAsync(personsRoi, resultsBottle);
                         }
                         if (resultsPhone.Count() != 0)
                         {
                             if (personsRoi.FilterLabels(["customerRoi"]).Count() != 0)
                             {
-                                await _personHandler.FindPhoneAsync(personsRoi.FilterLabels(["sellerRoi"]), resultsPhone);
+                                await FindPhoneAsync(personsRoi.FilterLabels(["sellerRoi"]), resultsPhone);
                             }
 
                         }
@@ -254,10 +246,95 @@ public partial class StreamViewModel : INotifyPropertyChanged
         return true;
     }
 
-    //ai//
-    private PointF GetCenter(RectangleF rect)
-    => new PointF(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+    public async Task FindPersonByRoleAsync(List<ObjectDetection> results, LabelModel label, SKRectI boundinxbox)
+    {
+        var personsRoi = results.Where(r => r.Label.Name == "person").Where(p => p.BoundingBox.IntersectsWith(boundinxbox)).ToList();
+        if (personsRoi.Count() > 0)
+        {
+            var persons = personsRoi.Select(p => new ObjectDetection() { BoundingBox = p.BoundingBox, Confidence = p.Confidence, Id = p.Id, Label = label, Tail = p.Tail }).ToList();
 
-    private float Distance(PointF a, PointF b)
-        => (float)Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+            foreach (var person in persons)
+            {
+                var index = results.FindIndex(i => i.Id == person.Id);
+
+                if (index != -1)
+                    results[index] = person;
+            }
+        };
+    }
+    public async Task<List<ObjectDetection>> GetPersonRoiAsync(List<ObjectDetection> persons)
+    {
+        List<ObjectDetection> personsRoi = new();
+        foreach (var person in persons)
+        {
+            string RoiLabelName;
+            switch (person.Label.Name)
+            {
+                case "seller":
+                    {
+                        RoiLabelName = "seller_roi";
+                        break;
+                    }
+                default:
+                    {
+                        RoiLabelName = "customer_roi";
+                        break;
+                    }
+
+            }
+            personsRoi.Add(new ObjectDetection
+            {
+                BoundingBox = new SKRectI
+                {
+                    Location = new SKPointI
+                    {
+                        X = person.BoundingBox.Left - 40,
+                        Y = person.BoundingBox.Top - 40
+                    },
+                    Size = new SKSizeI
+                    {
+                        Width = person.BoundingBox.Width + 80,  // 40 слева + 40 справа
+                        Height = person.BoundingBox.Height + 80 // 40 сверху + 40 снизу
+                    }
+                },
+                Label = new LabelModel { Name = RoiLabelName },
+                Confidence = person.Confidence,
+                Id = person.Id
+            });
+        }
+        return personsRoi;
+    }
+    public async Task FindBottleAsync(List<ObjectDetection> personsRoi, List<ObjectDetection> results)
+    {
+        foreach (var roi in personsRoi)
+        {
+            if (results.Any(bottle => roi.BoundingBox.Contains(bottle.BoundingBox)))
+            {
+                await _httpClient.Violation.PostAsync(new ViewModel.ViolationViewModel()
+                {
+                    DateTime = DateTime.Now,
+                    RoleId = (await _httpClient.Role.GetByNameAsync(roi.Label.Name)).Id,
+                    TypeId = 1
+
+                });
+                _logger.Log($"Нарушение: {roi.Label.Name} пьет воду");
+            }
+        }
+    }
+    public async Task FindPhoneAsync(List<ObjectDetection> sellerRoi, List<ObjectDetection> results)
+    {
+        foreach (var roi in sellerRoi)
+        {
+            if (results.Any(phone => roi.BoundingBox.Contains(phone.BoundingBox)))
+            {
+                await _httpClient.Violation.PostAsync(new ViewModel.ViolationViewModel()
+                {
+                    DateTime = DateTime.Now,
+                    RoleId = _httpClient.Role.GetByNameAsync(roi.Label.Name).Id,
+                    TypeId = 2
+                });
+                _logger.Log($"Нарушение: {roi.Label.Name} пьет воду");
+            }
+        }
+    }
 }

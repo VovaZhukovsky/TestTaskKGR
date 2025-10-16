@@ -2,11 +2,9 @@
 using Microsoft.Extensions.Hosting;
 using TestTaskKGR.Desktop.Implementations;
 using TestTaskKGR.Desktop.Model;
-using Microsoft.Extensions.Http;
-using TestTaskKGR.Desktop.Commands;
-using TestTaskKGR.Desktop.UserControls.ViewModels;
 using TestTaskKGR.ApiClient;
 using Microsoft.Extensions.Configuration;
+using TestTaskKGR.Desktop.Factory;
 
 namespace TestTaskKGR.Desktop;
 
@@ -28,6 +26,8 @@ public class Program
                 services.AddTransient<StreamParams>();
                 services.AddTransient<CommonParams>();
                 services.AddSingleton<MainWindowViewModel>();
+                services.AddSingleton<IStreamViewModelFactory, StreamViewModelFactory>();
+                services.AddSingleton<IStreamControlViewModelFactory, StreamControlViewModelFactory>();
                 services.AddHttpClient<TestTaskKGRApiClient>(client =>
                     {
                         client.BaseAddress = new Uri(context.Configuration["TestTaskKGRApiUri"]);

@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:local="clr-namespace:TestTaskKGR.Desktop"
         xmlns:views="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
         xmlns:viewmodel="clr-namespace:TestTaskKGR.Desktop" d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
         mc:Ignorable="d"

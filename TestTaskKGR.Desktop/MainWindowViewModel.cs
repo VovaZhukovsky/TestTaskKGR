@@ -1,7 +1,6 @@
-﻿using TestTaskKGR.ApiClient;
-using TestTaskKGR.Desktop.Commands;
+﻿using TestTaskKGR.Desktop.Commands;
+using TestTaskKGR.Desktop.Factory;
 using TestTaskKGR.Desktop.Implementations;
-using TestTaskKGR.Desktop.Model;
 using TestTaskKGR.Desktop.UserControls.ViewModels;
 
 namespace TestTaskKGR.Desktop;
@@ -17,24 +16,23 @@ public class MainWindowViewModel
     public WpfLogger LogConsole { get; set; }
     public StreamViewModel Stream1ViewModel { get; set; }
     public StreamViewModel Stream2ViewModel { get; set; }
-    private PersonHandler _personHandler;
     
 
     public MainWindowViewModel(
         WpfLogger wpfLogger,
         StreamParams streamParams,
-        CommonParams commonParams,
-        TestTaskKGRApiClient httpClient)
+        IStreamViewModelFactory streamFactory,
+        IStreamControlViewModelFactory streamControlFactory)
     {
         LogConsole = wpfLogger;
         ConfidentTrasholdCommand = new ConfidentTrasholdCommand(streamParams,LogConsole);
         DetectionHandlerCommand = new DetectionHandlerCommand(streamParams, LogConsole);
         FilterHandlerCommand = new FilterHandlerCommand(streamParams,LogConsole);
         TrackingHandlerCommand = new TrackingHandlerCommand(streamParams,LogConsole);
-        Stream1ViewModel = new StreamViewModel(LogConsole,streamParams,commonParams,httpClient);
-        Stream2ViewModel = new StreamViewModel(LogConsole,streamParams,commonParams,httpClient);
-        Stream1Control = new StreamControlViewModel(LogConsole,Stream1ViewModel,commonParams);
-        Stream2Control = new StreamControlViewModel(LogConsole,Stream2ViewModel,commonParams);
+        Stream1ViewModel = streamFactory.GetStream();
+        Stream2ViewModel = streamFactory.GetStream();
+        Stream1Control = streamControlFactory.GetStreamControl(Stream1ViewModel);
+        Stream2Control = streamControlFactory.GetStreamControl(Stream2ViewModel);
 
 
     }
