@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
+             xmlns:local="clr-namespace:TestTaskKGR.Desktop.Implementations"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:viewmodel="clr-namespace:TestTaskKGR.Desktop" d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="210" d:DesignWidth="650">
     <UserControl.Resources>
@@ -22,35 +24,36 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,10,10,10">
-                <Slider x:Name="ConfidenceTreshold"
-                        Minimum="0.20"
-                        Maximum="0.99"
-                        Foreground="Black"   
-                        Width="120"
-                        VerticalAlignment="Center"
-                        Value="0.8"/>
-                <!--ValueChanged="ConfidenceTreshold_ValueChanged"-->
-
+                <Slider x:Name="ConfidenceTreshold">
+                    <i:Interaction.Behaviors>
+                        <local:ConfidentTrasholdSliderBehavior Command="{Binding ConfidentTrasholdCommand.Change}"/>
+                    </i:Interaction.Behaviors>
+                </Slider>
+                
                 <TextBlock VerticalAlignment="Center"
-                           Text="{Binding ElementName=ConfidenceTreshold, Path=Value, StringFormat={}{0:F2}}" />
-            
+                           Text="{Binding Value, ElementName=ConfidenceTreshold, StringFormat=\{0:F2\}}" />
+                
                 <CheckBox x:Name="EnableTracking"
-                      Content="Track Objects" />
-                      <!--Unchecked="EnableTracking_Unchecked"-->
+                      Content="Track Objects"
+                      Command="{Binding TrackingHandlerCommand.Track}" 
+                      CommandParameter="{Binding ElementName=EnableTracking}"/>
 
                 <CheckBox x:Name="EnableFiltering"
-                      Content="Enable Filtering ('person' only)" />
-                <!--Unchecked="EnableFiltering_Unchecked"-->
+                      Content="Enable Filtering ('persons, phone, bottle' only)"
+                      Command="{Binding FilterHandlerCommand.Filter}" 
+                      CommandParameter="{Binding ElementName=EnableFiltering}"/>
             </StackPanel>
+            
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Grid.Row="1" Margin="10,10,10,10">
-                <!-- Buttons -->
                 <Button x:Name="Start"
-                    Content="Start Detection"/>
-                <!-- Click="StartClick"-->
+                    Content="Start Detection" 
+                    Command="{Binding DetectionHandlerCommand.Detection}" 
+                    CommandParameter="true"/>
 
                 <Button x:Name="Stop"
-                    Content="Stop Detection"/>
-                   <!-- Click="StopClick"-->
+                    Content="Stop Detection" 
+                    Command="{Binding DetectionHandlerCommand.Detection}" 
+                    CommandParameter="false"/>
             </StackPanel>
         </Grid>
     </GroupBox>

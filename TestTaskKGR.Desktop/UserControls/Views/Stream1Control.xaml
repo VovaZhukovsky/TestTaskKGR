@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TestTaskKGR.Desktop.UserControls.Views"
+             xmlns:viewmodel="clr-namespace:TestTaskKGR.Desktop" d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="85" d:DesignWidth="650">
 
@@ -17,9 +17,9 @@
     <GroupBox Header="Управление стримом 1" HorizontalAlignment="Center" Height="75" VerticalAlignment="Top" Width="640"  Margin="10,0,10,0">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <Label Content="URL" VerticalAlignment="Center"/>
-            <TextBox Width="300" Height="30"/>
-            <Button Content="Старт" />
-            <Button Content="Стоп"/>
+            <TextBox VerticalContentAlignment="Center" Text="{Binding Stream1Control.Url, UpdateSourceTrigger=PropertyChanged}" Width="300" Height="20"/>
+            <Button Content="Старт" Command="{Binding Stream1Control.StartStreamCommand}" />
+            <Button Content="Стоп" Command="{Binding Stream1Control.StopStreamCommand}" />
         </StackPanel>
     </GroupBox>
 </UserControl>

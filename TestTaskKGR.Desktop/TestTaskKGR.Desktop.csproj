@@ -7,20 +7,22 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
-
-
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Emgu.CV.runtime.windows" Version="4.12.0.5764" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.10" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.1" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.22.1" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
 		<PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1" />
-	</ItemGroup>
-
-
-	<ItemGroup>
-	  <Compile Update="UserControls\Views\Stream2Control.xaml.cs">
-	    <SubType>Code</SubType>
-	  </Compile>
+		<PackageReference Include="YoloDotNet" Version="3.1.1" />
+		<ProjectReference Include="..\TestTaskKGR.ViewModel\TestTaskKGR.ViewModel.csproj" />
+		<ProjectReference Include="..\TestTaskKGR.ApiClient\TestTaskKGR.ApiClient.csproj" />
+		<None Include="Onnx\*.onnx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>

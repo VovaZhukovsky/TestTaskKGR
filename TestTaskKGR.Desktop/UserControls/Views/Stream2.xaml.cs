@@ -1,28 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
 
-namespace TestTaskKGR.Desktop.UserControls.Views
+namespace TestTaskKGR.Desktop.UserControls.Views;
+
+public partial class Stream2 : UserControl
 {
-    /// <summary>
-    /// Interaction logic for Stream2.xaml
-    /// </summary>
-    public partial class Stream2 : UserControl
+    public Stream2()
     {
-        public Stream2()
+        InitializeComponent();
+        Loaded += (s, e) =>
         {
-            InitializeComponent();
-        }
+            if (DataContext is MainWindowViewModel viewModel)
+            {
+                viewModel.Stream2Control.StreamFrame = Stream2Frame;
+            }
+        };
     }
 }

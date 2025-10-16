@@ -20,7 +20,7 @@ namespace TestTaskKGR.Api
         {
             var response = _repo.Create(client);
             _repo.Save();
-            return StatusCode(200,response);
+            return StatusCode(201,null);
         }
 
         [HttpGet("{id}")]
