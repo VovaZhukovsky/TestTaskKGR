@@ -23,7 +23,7 @@ public class Program
                 services.AddSingleton<App>();
                 services.AddSingleton<WpfLogger>();
                 services.AddSingleton<MainWindow>();
-                services.AddTransient<StreamParams>();
+                services.AddSingleton<StreamParams>();
                 services.AddTransient<CommonParams>();
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<IStreamViewModelFactory, StreamViewModelFactory>();

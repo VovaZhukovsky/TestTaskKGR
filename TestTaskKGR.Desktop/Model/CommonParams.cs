@@ -6,8 +6,8 @@ namespace TestTaskKGR.Desktop.Model;
 
 public class CommonParams
 {
-    public int StreamWidth = 800;
-    public int StreamHeigth = 600;
+    public int StreamWidth = 640;
+    public int StreamHeigth = 480;
     public int FPS = 30;
     public string OnnexMainModelPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Onnx", "yolo12m.onnx");
     public string OnnexBottleModelPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Onnx", "bottle_best.onnx");
